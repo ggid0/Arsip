@@ -1,0 +1,76 @@
+name: Convert RAR Release to ZIP
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  convert-rar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install unrar and zip
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unrar zip
+
+      - name: Download RAR assets from release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Mengambil daftar file dari release saat ini
+          assets=$(gh release view ${{ github.event.release.tag_name }} --json assets -q '.assets[].name')
+          
+          mkdir -p rar_files extracted zip_files
+          
+          # Mengunduh semua file .rar
+          for asset in $assets; do
+            if [[ "$asset" == *.rar ]]; then
+              echo "Downloading $asset..."
+              gh release download ${{ github.event.release.tag_name }} -p "$asset" -D ./rar_files
+            fi
+          done
+
+      - name: Extract RAR and Create ZIP
+        run: |
+          cd rar_files
+          for rar_file in *.rar; do
+            if [ -f "$rar_file" ]; then
+              base_name="${rar_file%.rar}"
+              mkdir -p "../extracted/$base_name"
+              
+              # Ekstrak file RAR
+              unrar x -o+ "$rar_file" "../extracted/$base_name/"
+              
+              # Buat file ZIP
+              cd "../extracted/$base_name"
+              zip -r "../../zip_files/${base_name}.zip" .
+              cd "../../rar_files"
+            fi
+          done
+
+      - name: Upload ZIP asset and delete RAR asset
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Unggah semua file .zip yang baru dibuat
+          for zip_file in zip_files/*.zip; do
+            if [ -f "$zip_file" ]; then
+              echo "Uploading $zip_file to release..."
+              gh release upload ${{ github.event.release.tag_name }} "$zip_file" --clobber
+            fi
+          done
+
+          # Hapus file .rar lama dari GitHub Release (Opsional)
+          assets=$(gh release view ${{ github.event.release.tag_name }} --json assets -q '.assets[].name')
+          for asset in $assets; do
+            if [[ "$asset" == *.rar ]]; then
+              echo "Deleting old RAR asset: $asset..."
+              gh release delete-asset ${{ github.event.release.tag_name }} "$asset" -y
+            fi
+          done
