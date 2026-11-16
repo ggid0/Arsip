@@ -1,0 +1,10 @@
+{
+  "version": "1.2.5",
+  "versionCode": 13,
+  "changelog": [
+    "Suara alarm kustom",
+    "History per timer tampil sebagai popup",
+    "Perbaikan stabilitas alarm"
+  ],
+  "apkUrl": "https://github.com/USERNAME/rentalps-updates/releases/download/v1.2.5/rentalps-1.2.5.apk"
+}
