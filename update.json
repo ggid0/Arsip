@@ -2,9 +2,11 @@
   "version": "1.2.5",
   "versionCode": 13,
   "changelog": [
-    "Suara alarm kustom",
-    "History per timer tampil sebagai popup",
-    "Perbaikan stabilitas alarm"
+    "Suara alarm kustom: pakai file audio sendiri dengan batas 10 MB dan 10 suara.",
+    "History tiap timer kini tampil sebagai popup; history global tetap halaman penuh.",
+    "Cek pembaruan otomatis saat aplikasi dibuka, lengkap dengan changelog.",
+    "Unduh dan pasang pembaruan langsung dari aplikasi tanpa meninggalkan RentalPS.",
+    "Perbaikan stabilitas pemutaran alarm dan penyimpanan timer."
   ],
-  "apkUrl": "https://github.com/USERNAME/rentalps-updates/releases/download/v1.2.5/rentalps-1.2.5.apk"
+  "apkUrl": "https://github.com/ggid0/Arsip/releases/download/Rental.PS/app-release.apk"
 }
